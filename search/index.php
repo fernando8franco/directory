@@ -1,49 +1,34 @@
 <?php
-/* // Datos simulados (mock data)
-$mockData = [
-    ['first_name' => 'John', 'last_name' => 'Doe', 'email' => 'john.doe@example.com'],
-    ['first_name' => 'Jane', 'last_name' => 'Doe', 'email' => 'jane.doe@example.com'],
-    ['first_name' => 'Alice', 'last_name' => 'Smith', 'email' => 'alice.smith@example.com'],
-    ['first_name' => 'Bob', 'last_name' => 'Brown', 'email' => 'bob.brown@example.com'],
-    ['first_name' => 'Charlie', 'last_name' => 'Davis', 'email' => 'charlie.davis@example.com'],
-];
+header('Content-Type: text/html; charset=UTF-8');
 
-// Obtener el término de búsqueda
-$searchTerm = isset($_POST['search']) ? $_POST['search'] : '';
+include "./templates/core/Template.php";
 
-// Filtrar los datos simulados basados en el término de búsqueda
-$filteredResults = array_filter($mockData, function ($contact) use ($searchTerm) {
-    // Buscar en primer nombre, apellido y correo electrónico
-    return stripos($contact['first_name'], $searchTerm) !== false ||
-           stripos($contact['last_name'], $searchTerm) !== false ||
-           stripos($contact['email'], $searchTerm) !== false;
-});
-
-// Si hay resultados, generar el HTML para la tabla
-if (!empty($filteredResults)) {
-    foreach ($filteredResults as $contact) {
-        echo '<tr>';
-        echo '<td>' . htmlspecialchars($contact['first_name']) . '</td>';
-        echo '<td>' . htmlspecialchars($contact['last_name']) . '</td>';
-        echo '<td>' . htmlspecialchars($contact['email']) . '</td>';
-        echo '</tr>';
-    }
-} else {
-    // Si no hay resultados, mostrar un mensaje
-    echo '<tr><td colspan="3">No results found.</td></tr>';
-}
-?> */
-
-include "config.php";
+$search = $_POST['search'] ?? '';
+$db = new SQLite3("directorio.db");
+$db->enableExceptions(true);
 
 try {
-    $result = $db->query("SELECT * FROM $db_name");
-    while ($row = $result->fetchArray()) {
-        foreach ($row as $column => $value) {
-            echo $column . ": " . $value . "<br>";
-        }
-        echo "<br>";
+    if (empty($search)) {
+        $stmt = $db->prepare("SELECT * FROM directorio");
+    } else {
+        $stmt = $db->prepare("SELECT * FROM directorio WHERE nombre LIKE ? OR cargo LIKE ?");
+        $search = "%$search%";
+        $stmt->bindValue(1, $search, SQLITE3_TEXT);
+        $stmt->bindValue(2, $search, SQLITE3_TEXT);
+    }
+
+    $result = $stmt->execute();
+
+
+    $counter = 0;
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $row['isEven'] = ($counter % 2 == 0) ? true : false;
+
+        $temp = new Template("./templates/AccordeonTemplate.php", $row);
+        echo $temp->render();
+
+        $counter++;
     }
 } catch (Exception) {
-    echo("null");
+    echo("<div>Algo salio mal en la busqueda</div>");
 }
