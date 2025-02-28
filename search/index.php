@@ -1,7 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
 
-include "./templates/core/Template.php";
+include_once "./templates/core/Template.php";
+include_once "./database/DatabaseClass.php";
 
 $search = $_POST['search'] ?? '';
 $db = new SQLite3("directorio.db");
