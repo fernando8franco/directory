@@ -3,33 +3,37 @@ header('Content-Type: text/html; charset=UTF-8');
 
 include_once "./templates/core/Template.php";
 include_once "./database/DatabaseClass.php";
+include_once "./environment/Environment.php";
 
 $search = $_POST['search'] ?? '';
-$db = new SQLite3("directorio.db");
-$db->enableExceptions(true);
+$db = new Database(getenv('DB_HOST'), getenv('DB_PORT'), getenv('DB_USERNAME'), getenv('DB_PASSWORD'), getenv('DB_DATABASE'));
 
-try {
-    if (empty($search)) {
-        $stmt = $db->prepare("SELECT * FROM directorio");
-    } else {
-        $stmt = $db->prepare("SELECT * FROM directorio WHERE nombre LIKE ? OR cargo LIKE ?");
-        $search = "%$search%";
-        $stmt->bindValue(1, $search, SQLITE3_TEXT);
-        $stmt->bindValue(2, $search, SQLITE3_TEXT);
-    }
+if ($db->hasError()) {
+    $errorTemp = new Template("./templates/ErrorTemplate.php");
+    echo $errorTemp->render();
+    exit;
+}
 
-    $result = $stmt->execute();
+if (empty($search)) {
+    $dir = $db->fetchAll("SELECT * FROM tb_address_book");
+} else {
+    $search = "%{$search}%";
+    $dir = $db->fetchAllWithTypes("SELECT * FROM tb_address_book WHERE name LIKE ? OR charge LIKE ?",
+                                    "ss",
+                                    [$search, $search]
+                                );
+}
 
+if (empty($dir)) {
+    $errorTemp = new Template("./templates/NotFoundTemplate.php");
+    echo $errorTemp->render();
+    exit;
+}
 
-    $counter = 0;
-    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        $row['isEven'] = ($counter % 2 == 0) ? true : false;
-
-        $temp = new Template("./templates/AccordeonTemplate.php", $row);
-        echo $temp->render();
-
-        $counter++;
-    }
-} catch (Exception) {
-    echo("<div>Algo salio mal en la busqueda</div>");
+$counter = 0;
+foreach ($dir as $d) {
+    $d['isEven'] = ($counter % 2 == 0) ? true : false;
+    $temp = new Template("./templates/AccordeonTemplate.php", $d);
+    echo $temp->render();
+    $counter++;
 }

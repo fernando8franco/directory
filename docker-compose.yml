@@ -1,11 +1,24 @@
-version: '3'
-
 services:
-   web:
-     build:
-       context: . 
-       dockerfile: Dockerfile
-     ports:
-       - "80:80"
-     volumes:
-       - ./:/var/www/html
+  web:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7.42
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mipassword888
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

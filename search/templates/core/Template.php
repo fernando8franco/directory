@@ -20,7 +20,7 @@ class Template {
 
             return $buffer;
         } else {
-            return "<div>Algo salio mal!</div>";
+            return "<div>Template not found</div>";
         }
     }       
 }
