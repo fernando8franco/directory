@@ -6,6 +6,9 @@ include_once "./database/DatabaseClass.php";
 include_once "./environment/Environment.php";
 
 $search = $_POST['search'] ?? '';
+
+// Connection to de db
+// The .env has the information of the dabase connection
 $db = new Database(getenv('DB_HOST'), getenv('DB_PORT'), getenv('DB_USERNAME'), getenv('DB_PASSWORD'), getenv('DB_DATABASE'));
 
 if ($db->hasError()) {

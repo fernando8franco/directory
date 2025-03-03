@@ -1,4 +1,3 @@
-
 <div x-data="{ isExpanded: false }" class="border border-neutral-300">
     <button id="controlsAccordionItemOne" type="button" class="flex flex-wrap w-full h-[80px] items-center justify-between gap-4 p-4 <?php echo $isEven ? 'bg-neutral-200' : 'bg-neutral-100'; ?> underline-offset-2 hover:bg-surface-alt/75 focus-visible:bg-surface-alt/75 focus-visible:underline focus-visible:outline-hidden" aria-controls="accordionItemOne" x-on:click="isExpanded = ! isExpanded" x-bind:aria-expanded="isExpanded ? 'true' : 'false'">
         <div class="flex-1 min-w-0">

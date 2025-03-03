@@ -13,6 +13,10 @@
                 Directorio
             </h1>
         </div>
+
+        <!-- Input where the data is recived and the petition to /search is made 
+            /search sends html not json
+        -->
         <div class="relative flex w-full max-w-xs flex-col gap-1 text-gray-800 font-[Helvetica Neue] font-semibold">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="absolute left-2.5 top-1/2 size-5 -translate-y-1/2 text-neutral-600/50"> 
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -20,12 +24,14 @@
             <input class="form-control rounded-sm border border-neutral-300 bg-neutral-50 py-2 pl-10 pr-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black disabled:cursor-not-allowed disabled:opacity-75" 
                 type="search" name="search" placeholder="Buscar..."
                 x-model="search" x-init="search = ''"
-                hx-post="/search/"
-                hx-trigger="input changed delay:350ms, keyup[key=='Enter'], load"
+                hx-post="/search"
+                hx-trigger="input changed delay:400ms, keyup[key=='Enter'], load"
                 hx-target="#search-results"/>
         </div>
 
+        <!-- This is the div where hx-post put the html sended by /search -->
         <div id="search-results" class="w-full max-w-screen-lg overflow-hidden">
+            <!-- This are skeletons -->
             <div class="w-full h-[80px] py-1">
                 <div class="w-full h-[75px] animate-pulse rounded-sm bg-neutral-600/30" aria-hidden="true"></div>
             </div>
